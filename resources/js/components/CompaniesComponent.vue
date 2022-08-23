@@ -50,16 +50,16 @@
                 <nav aria-label="Page navigation" class="mt-2">
                     <ul class="pagination">
                         <li class="page-item" v-bind:class="{ 'disabled': page == 1 }">
-                            <button class="page-link" v-on:click="getCompanies(page - 1)">
+                            <button class="page-link" v-on:click="getCompanies(page - 1, pencarian)">
                                 <span aria-hidden="true">&laquo;</span>
                                 <span class="sr-only">Previous</span>
                             </button>
                         </li>
                         <li class="page-item" v-for="item in last_page" v-bind:class="{ 'active': item == page }">
-                            <button class="page-link" v-on:click="getCompanies(item)">{{ item }}</button>
+                            <button class="page-link" v-on:click="getCompanies(item, pencarian)">{{ item }}</button>
                         </li>
                         <li class="page-item" v-bind:class="{ 'disabled': page == last_page }">
-                            <a class="page-link" v-on:click="getCompanies(page + 1)">
+                            <a class="page-link" v-on:click="getCompanies(page + 1, pencarian)">
                                 <span aria-hidden="true">&raquo;</span>
                                 <span class="sr-only">Next</span>
                             </a>
@@ -219,7 +219,7 @@ export default {
         }
     },
     mounted() {
-        this.getCompanies(this.page);
+        this.getCompanies(this.page, this.pencarian);
     },
     watch: {
         pencarian(newPencarian, oldPencarian) {
@@ -249,6 +249,7 @@ export default {
 
         async getCompanies(page = 1, search = '') {
             this.page = page;
+            this.pencarian = search;
             try {
                 const res = await axios.get('/api/companies?page=' + page + '&search=' + search);
                 const data = res.data.data.data;

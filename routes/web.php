@@ -19,4 +19,6 @@ Route::post('/login', 'AuthController@prosesLogin')->name('login');
 Route::middleware('auth')->group(function () {
     Route::get('/beranda', 'BerandaController@index');
     Route::get('/companies', 'CompaniesController@index');
+
+    Route::get('/logout', 'AuthController@prosesLogout');
 });

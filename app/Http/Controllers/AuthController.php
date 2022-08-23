@@ -32,4 +32,10 @@ class AuthController extends Controller
         $this->incrementLoginAttempts($request);
         return back()->with(['type' => 'danger', 'message' => 'email atau password salah!']);
     }
+
+    public function prosesLogout(Request $request)
+    {
+        auth()->logout();
+        return redirect('/');
+    }
 }

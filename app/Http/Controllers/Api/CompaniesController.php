@@ -9,7 +9,9 @@ class CompaniesController extends Controller
 {
     public function get(Request $request)
     {
-        $companies = \App\Models\Company::latest()->paginate(10);
+        $companies = \App\Models\Company::where(function ($query) use ($request) {
+            $query->orWhere('name', 'LIKE', "%" . $request->search . "%")->orWhere('email', 'LIKE',  "%" . $request->search . "%")->orWhere('website', 'LIKE',  "%" . $request->search . "%");
+        })->latest()->paginate(10);
 
         $response = [
             'success' => true,
@@ -67,6 +69,10 @@ class CompaniesController extends Controller
         $requestAll = $request->only('name', 'email', 'website');
         if ($request->file('logo')) {
             $requestAll['logo'] = $request->file('logo')->store('public');
+        }
+
+        if ($request->delete_logo) {
+            $requestAll['logo'] = null;
         }
 
         $company = \App\Models\Company::findOrFail($request->id)->update($requestAll);

@@ -2,11 +2,15 @@
     <div class="container-fluid">
         <div class="card">
             <div class="card-body">
-                <button type="button" class="btn btn-primary mb-2" v-on:click="showModalTambah">
+                <button type="button" class="btn btn-primary mb-3" v-on:click="showModalTambah">
                     Tambah
                 </button>
-
-
+                <div class="input-group mb-2">
+                    <input type="text" class="form-control" placeholder="Pencarian" v-model="pencarian">
+                    <div class="input-group-append">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    </div>
+                </div>
                 <table class="table table-striped border">
                     <thead>
                         <tr>
@@ -147,10 +151,17 @@
                                 {{ validate_ubah.email }}
                             </small>
                         </div>
-                        <div class="form-group">
-                            <label for="logo">Logo</label>
+                        <div class="form-group mb-1">
+                            <label for="logo">Logo <small>(abaikan jika tidak ingin diubah)</small></label>
                             <input type="file" class="form-control-file" name="logo" id="logo" ref="logo"
                                 v-on:change="onChangeLogoUbah" placeholder="logo">
+                        </div>
+                        <div class="form-check mt-0 mb-2">
+                            <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input" name="delete_logo" id="delete_logo"
+                                    value="checkedValue" v-model="form_ubah.delete_logo" checked>
+                                Hapus Logo
+                            </label>
                         </div>
                         <div class="form-group">
                             <label for="website">Website</label>
@@ -189,6 +200,7 @@ export default {
                 email: '',
                 logo: '',
                 website: '',
+                delete_logo: false,
             },
             validate: {
                 name: [],
@@ -200,12 +212,23 @@ export default {
                 email: [],
                 website: [],
             },
+            pencarian: '',
             page: 1,
             last_page: 0,
+            delayTimer: null,
         }
     },
     mounted() {
         this.getCompanies(this.page);
+    },
+    watch: {
+        pencarian(newPencarian, oldPencarian) {
+            this.isLoading = true;
+            clearTimeout(this.delayTimer);
+            this.delayTimer = setTimeout(() => {
+                this.getCompanies(1, newPencarian);
+            }, 500);
+        }
     },
     methods: {
         showModalTambah() {
@@ -224,10 +247,10 @@ export default {
             $(this.$refs.modalUbah).modal('hide');
         },
 
-        async getCompanies(page = 1) {
+        async getCompanies(page = 1, search = '') {
             this.page = page;
             try {
-                const res = await axios.get('/api/companies?page=' + page);
+                const res = await axios.get('/api/companies?page=' + page + '&search=' + search);
                 const data = res.data.data.data;
                 this.page = res.data.data.current_page;
                 this.last_page = res.data.data.last_page;
@@ -310,7 +333,7 @@ export default {
         },
 
         async editCompany(form) {
-            this.form_ubah = { ...form, logo: '', website: form.website ?? '' };
+            this.form_ubah = { ...form, logo: '', website: form.website ?? '', delete_logo: false };
             this.showModalUbah();
         },
 
@@ -355,8 +378,7 @@ export default {
                     console.log(_);
                 }
             }
-        }
-        ,
+        },
         onChangeLogoTambah(e) {
             this.form.logo = e.target.files[0] ?? '';
         },

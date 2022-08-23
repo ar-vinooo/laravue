@@ -25,6 +25,7 @@
     },
     "dependencies": {
         "collect": "^0.3.5",
-        "sweetalert2": "^11.4.29"
+        "sweetalert2": "^11.4.29",
+        "validate.js": "^0.13.1"
     }
 }

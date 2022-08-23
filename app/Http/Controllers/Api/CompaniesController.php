@@ -55,4 +55,28 @@ class CompaniesController extends Controller
 
         return response()->json($response);
     }
+
+    public function put(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'email' => 'nullable|email',
+            'logo' => 'nullable|image'
+        ]);
+
+        $requestAll = $request->only('name', 'email', 'website');
+        if ($request->file('logo')) {
+            $requestAll['logo'] = $request->file('logo')->store('public');
+        }
+
+        $company = \App\Models\Company::findOrFail($request->id)->update($requestAll);
+
+        $response = [
+            'success' => true,
+            'message' => 'Successfully edit data!',
+            'data' => $company,
+        ];
+
+        return response()->json($response);
+    }
 }

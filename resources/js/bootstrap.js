@@ -13,6 +13,7 @@ try {
 window.axios = require('axios');
 window.collect = require('collect.js');
 window.swal = require('sweetalert2');
+window.validate = require('validate.js');
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
